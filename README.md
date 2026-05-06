@@ -1,8 +1,8 @@
-# HEIF_Viewer_desktop
+# HEIC_Viewer_desktop
 
 ![icon.ico](img/icon.ico)
 
-This is desktop app for viewer images with which you can also view heic and heif files.
+This is desktop app for viewer images with which you can also view heic files.
 
 * File dialog window
 ![1.png](img/1.png)
