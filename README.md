@@ -1,4 +1,4 @@
-# HEIC_Viewer
+# HEIC Viewer
 
 ![icon.ico](img/icon.ico)
 
