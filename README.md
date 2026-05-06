@@ -1,4 +1,4 @@
-# HEIC_Viewer_desktop
+# HEIC_Viewer
 
 ![icon.ico](img/icon.ico)
 
