@@ -118,8 +118,8 @@ class App(Tk):
         self.main_menu.add_command(label='<- a\u0332',command=self.back)
         self.main_menu.add_command(label='d\u0332 ->',command=self.next)
 
-        self.main_menu.add_command(label='\u21B6',command=self.turn_counterclockwise)
-        self.main_menu.add_command(label='\u21B7',command=self.turn_clockwise)
+        self.main_menu.add_command(label='\u21B6 q\u0332',command=self.turn_counterclockwise)
+        self.main_menu.add_command(label='e\u0332 \u21B7',command=self.turn_clockwise)
 
         self.main_menu.add_command(label='f\u0332ullscreen',command=self.fullscreen_on)
         self.main_menu.add_command(label='[ s\u0332cale ]',command=self.img_full_window_scale)
