@@ -266,13 +266,13 @@ class App(Tk):
 
     def turn_counterclockwise(self):
         '''Поворот изображения против часовой'''
-        self.img = self.img.rotate(-90, expand=True)
+        self.img = self.img.rotate(90, expand=True, resample=Image.LANCZOS)
         self.img_draw()
 
 
     def turn_clockwise(self):
         '''Поворот изображения по часовой'''
-        self.img = self.img.rotate(90, expand=True)
+        self.img = self.img.rotate(-90, expand=True, resample=Image.LANCZOS)
         self.img_draw()
 
     def keyboard(self, event):
