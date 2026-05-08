@@ -2,15 +2,27 @@ from tkinter import *
 from tkinter import filedialog
 import os
 from sys import argv, exit
+import sys
+import ctypes
 from PIL import Image, ImageTk
 import pillow_heif
 
 pillow_heif.register_heif_opener()
 
+try:
+    appid = 'VadimMakhrov.HEIC_Viewer.1.0' # Придумай любое имя
+    ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(appid)
+except Exception:
+    pass
 
 class App(Tk):
     def __init__(self):
         super().__init__()
+
+        icon_path = self.get_path("img\\icon.ico")
+
+        if os.path.exists(icon_path):
+            self.iconbitmap(icon_path)
 
         self.title("HEIC Viewer")
         self.state('zoomed')
@@ -55,6 +67,12 @@ class App(Tk):
         # прослушивание изменения размера окна
         self.bind("<Configure>", self.resize_window)
 
+    def get_path(self, relative_path):
+            '''Функция для поиска ресурсов внутри EXE или в папке проекта'''
+            if hasattr(sys, '_MEIPASS'):
+                return os.path.join(sys._MEIPASS, relative_path)
+            return os.path.join(os.path.abspath("."), relative_path)
+
     def resize_window(self, event):
         '''событие изменения размера окна'''
         if self.current_window_width == self.winfo_width() and self.current_window_height == self.winfo_height():
@@ -93,7 +111,6 @@ class App(Tk):
     def show_menu(self):
         '''Показывает меню'''
         self.main_menu = Menu()
-        # self.file_menu = Menu(self.main_menu,tearoff=0)
 
         self.background_menu = Menu(self.main_menu,tearoff=0)
 
@@ -199,7 +216,7 @@ class App(Tk):
     def get_files(self):
         '''Получить список файлов изображений'''
         self.dir_path = '\\'.join(str(self.path).split('\\')[:-1])
-        self.files = [_ for _ in os.listdir(self.dir_path) if ('.heic' in _) or ('.png' in _) or ('.jpg' in _) or ('.gif' in _)]
+        self.files = [_ for _ in os.listdir(self.dir_path) if ('.heic' in _) or ('.png' in _) or ('.jpg' in _) or ('.gif' in _) or ('.jpeg' in _)]
 
     def create_canvas(self):
         '''Создание канвы'''
@@ -219,7 +236,7 @@ class App(Tk):
 
     def img_draw(self):
         '''Отрисовка изображения'''
-        self.img_res = self.img.resize([int(self.img.width * self.percent), int(self.img.height * self.percent)])
+        self.img_res = self.img.resize([int(self.img.width * self.percent), int(self.img.height * self.percent)], resample=Image.LANCZOS)
         self.image_tk = ImageTk.PhotoImage(image=self.img_res)
 
         self.canvas.create_image(int(self.winfo_width()//2),int(self.winfo_height()//2),image=self.image_tk, tags=self.tag)
@@ -260,7 +277,6 @@ class App(Tk):
 
     def keyboard(self, event):
         '''Обработка клавиш с клавиатуры'''
-        # print(event.keycode)
         if event.keycode == 37 or event.keycode == 65: self.back() # 'Left' or 'a'
         elif event.keycode == 39 or event.keycode == 68: self.next() # 'Right' or 'd'
         elif event.keycode == 81: self.turn_counterclockwise() # 'q'
