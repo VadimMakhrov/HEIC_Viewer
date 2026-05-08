@@ -22,7 +22,7 @@ class App(Tk):
         min_size = int(self.winfo_width()*0.3) if self.winfo_width() > self.winfo_height() else int(self.winfo_height()*0.3)
         self.minsize(min_size, min_size)
         self.maxsize(self.winfo_screenwidth(), self.winfo_screenheight())
-        
+
         # текущие размеры окна
         self.current_window_width = self.winfo_width()
         self.current_window_height = self.winfo_height()
@@ -47,7 +47,7 @@ class App(Tk):
 
         # прослушивание колёсика мышки
         self.bind("<MouseWheel>", self.img_scale)
-        
+
         # перетаскивание картинки мышкой
         self.bind("<B1-Motion>", self.img_drag)
         self.bind("<ButtonPress-1>", self.img_drag_start)
@@ -91,20 +91,23 @@ class App(Tk):
         self.canvas.scan_dragto(event.x, event.y, gain=1)
 
     def show_menu(self):
-        '''Показывает меню'''        
+        '''Показывает меню'''
         self.main_menu = Menu()
-        self.file_menu = Menu(self.main_menu,tearoff=0)
-        self.background_menu = Menu(self.file_menu,tearoff=0)
+        # self.file_menu = Menu(self.main_menu,tearoff=0)
 
-        self.main_menu.add_cascade(label='File',menu=self.file_menu)
-        self.main_menu.add_command(label='<- q\u0332',command=self.back)
-        self.main_menu.add_command(label='e\u0332 ->',command=self.next)
+        self.background_menu = Menu(self.main_menu,tearoff=0)
 
-        self.file_menu.add_command(label='Open',command=self.open_file)
-        self.file_menu.add_command(label='f\u0332ullscreen',command=self.fullscreen_on)
-        self.file_menu.add_command(label='[ s\u0332cale ]',command=self.img_full_window_scale)
-        self.file_menu.add_command(label='1\u033200%',command=self.img_original_scale)
-        self.file_menu.add_cascade(label='Background',menu=self.background_menu)
+        self.main_menu.add_command(label='Open',command=self.open_file)
+        self.main_menu.add_command(label='<- a\u0332',command=self.back)
+        self.main_menu.add_command(label='d\u0332 ->',command=self.next)
+
+        self.main_menu.add_command(label='\u21B6',command=self.turn_counterclockwise)
+        self.main_menu.add_command(label='\u21B7',command=self.turn_clockwise)
+
+        self.main_menu.add_command(label='f\u0332ullscreen',command=self.fullscreen_on)
+        self.main_menu.add_command(label='[ s\u0332cale ]',command=self.img_full_window_scale)
+        self.main_menu.add_command(label='1\u033200%',command=self.img_original_scale)
+        self.main_menu.add_cascade(label='Background',menu=self.background_menu)
 
         self.background_menu.add_command(label='Black',command=self.bg_black)
         self.background_menu.add_command(label='White',command=self.bg_white)
@@ -157,9 +160,14 @@ class App(Tk):
                 path = argv[-1]
                 return func(*args, path = path)
             else:
-                path = filedialog.askopenfilename(filetypes=[('All types', '*.*'),('HEIC','.heic'),('PNG','.png'),('JPEG','.jpg .jpeg')]).replace('/','\\')
-                if path == '': path = None
+                path = filedialog.askopenfilename(filetypes=[('Types', '.heic .png .jpg .jpeg .gif'),('HEIC','.heic'),('PNG','.png'),('JPEG','.jpg .jpeg')]).replace('/','\\')
+                if path == '':
+                    path = None
+                else:
+                    while path.split('.')[-1] not in ['png', 'heic', 'jpg', 'jpeg', 'gif']:
+                        path = filedialog.askopenfilename(filetypes=[('Types', '.heic .png .jpg .jpeg .gif'),('HEIC','.heic'),('PNG','.png'),('JPEG','.jpg .jpeg')]).replace('/','\\')
                 return func(*args, path = path)
+
         return wrapper
 
     @dec_open_file
@@ -174,9 +182,9 @@ class App(Tk):
         # Получаем название файла
         self.file_name = str(self.path).split('\\')[-1]
 
-        # загрузка изображения 
+        # загрузка изображения
         self.img = self.img_load()
-        
+
         # отрисовка изображения
         self.percent = self.get_scale()
         self.create_canvas()
@@ -239,10 +247,24 @@ class App(Tk):
             self.path = '\\'.join([self.dir_path, self.files[int(self.files.index(self.file_name)) + 1]])
         self.open_file(path=self.path)
 
+    def turn_counterclockwise(self):
+        '''Поворот изображения против часовой'''
+        self.img = self.img.rotate(-90, expand=True)
+        self.img_draw()
+
+
+    def turn_clockwise(self):
+        '''Поворот изображения по часовой'''
+        self.img = self.img.rotate(90, expand=True)
+        self.img_draw()
+
     def keyboard(self, event):
         '''Обработка клавиш с клавиатуры'''
-        if event.keycode == 37 or event.keycode == 81: self.back() # 'Left' or 'q'
-        elif event.keycode == 39 or event.keycode == 69: self.next() # 'Right' or 'e'
+        # print(event.keycode)
+        if event.keycode == 37 or event.keycode == 65: self.back() # 'Left' or 'a'
+        elif event.keycode == 39 or event.keycode == 68: self.next() # 'Right' or 'd'
+        elif event.keycode == 81: self.turn_counterclockwise() # 'q'
+        elif event.keycode == 69: self.turn_clockwise() # 'e'
         elif event.keycode == 70: self.fullscreen_on() # 'F'
         elif event.keycode == 27: self.fullscreen_off() # 'Esc'
         elif event.keycode == 83: self.img_full_window_scale() # 'S'
